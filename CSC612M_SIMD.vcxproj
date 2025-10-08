@@ -128,26 +128,26 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="asm_asum.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'!='x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Program Files (x86)\SASM\NASM\nasm" -f win64 asm_asum.asm</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">asm_asum.obj</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'!='x64'">"C:\Program Files (x86)\SASM\NASM\nasm" -f win64 asm_asum.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'!='x64'">asm_asum.obj</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="simd_asum_ymm.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'!='x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Program Files (x86)\SASM\NASM\nasm" -f win64 simd_asum_ymm.asm</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">simd_asum_ymm.obj</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'!='x64'">"C:\Program Files (x86)\SASM\NASM\nasm" -f win64 simd_asum_ymm.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'!='x64'">simd_asum_ymm.obj</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="simd_asum_xmm.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'!='x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Program Files (x86)\SASM\NASM\nasm" -f win64 simd_asum_xmm.asm</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">simd_asum_xmm.obj</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'!='x64'">"C:\Program Files (x86)\SASM\NASM\nasm" -f win64 simd_asum_xmm.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'!='x64'">simd_asum_xmm.obj</Outputs>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -81,6 +81,13 @@ int main() {
     const char* test_names[] = { "2^20", "2^26", "2^30", "1003 (Boundary)" };
     int num_tests = sizeof(test_sizes) / sizeof(test_sizes[0]);
 
+    // Check if we are in DEBUG or RELEASE mode
+#ifdef _DEBUG
+    printf("--- RUNNING IN DEBUG MODE ---\n\n");
+#else
+    printf("--- RUNNING IN RELEASE MODE ---\n\n");
+#endif
+
     for (int i = 0; i < num_tests; ++i) {
         size_t n = test_sizes[i];
         printf("=========================================================================\n");
