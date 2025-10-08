@@ -23,5 +23,11 @@
     <CustomBuild Include="simd_asum_ymm.asm">
       <Filter>Source Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="asm_asum.asm">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="simd_asum_xmm.asm">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
