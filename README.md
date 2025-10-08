@@ -15,21 +15,49 @@ The project was developed using **Visual Studio 2022** on a Windows x64 platform
 
 The following screenshots display the program's output, including execution times, correctness verification against the C reference kernel, and boundary condition checks for all required vector sizes.
 
-### **Release Mode Output**
-
-<img width="921" height="746" alt="Release" src="https://github.com/user-attachments/assets/eeb3a444-c1a9-47c9-95b9-213095a5c021" />
-
 ### **Debug Mode Output**
 
 <img width="935" height="736" alt="Debug" src="https://github.com/user-attachments/assets/b86bed58-fe0d-407e-bb3d-b1881d43c48e" />
+
+### **Release Mode Output**
+
+<img width="921" height="746" alt="Release" src="https://github.com/user-attachments/assets/eeb3a444-c1a9-47c9-95b9-213095a5c021" />
 
 ---
 
 ## Comparative Performance Analysis
 
-The performance of each kernel was measured by averaging its execution time over 30 runs. The analysis below is based on the results obtained from the **Release** build, which has compiler optimizations enabled.
+The performance of each kernel was measured by averaging its execution time over 30 runs. This analysis covers both the non-optimized **Debug** build and the optimized **Release** build to provide a comprehensive view of performance.
 
-#### **Table 1: Average Execution Time (Release Mode, in milliseconds)**
+### **Debug Mode Analysis (Non-Optimized)**
+
+In Debug mode, compiler optimizations are turned off. This allows us to see the raw performance of the handwritten assembly code compared to the unoptimized C code.
+
+#### **Table 1: Average Execution Time (Debug Mode, in milliseconds)**
+
+| Kernel | Vector Size: 2^20 | Vector Size: 2^26 | Vector Size: 2^30 |
+| :--- | :--- | :--- | :--- |
+| **C Kernel** | 2.294160 ms | 145.619107 ms | 2342.981683 ms |
+| **ASM (x86-64)**| 0.400227 ms | 24.575810 ms | 395.921253 ms |
+| **SIMD (XMM)** | **0.101553 ms** | **10.522490 ms** | **164.343363 ms** |
+| **SIMD (YMM)** | **0.096263 ms** | 10.920990 ms | 163.650643 ms |
+
+#### **Table 2: Speedup Factor (Debug Mode, Relative to C Kernel)**
+
+| Kernel | Vector Size: 2^20 | Vector Size: 2^26 | Vector Size: 2^30 |
+| :--- | :--- | :--- | :--- |
+| **ASM (x86-64)**| 5.73x | 5.93x | 5.92x |
+| **SIMD (XMM)** | **22.6x** | **13.84x** | **14.26x** |
+| **SIMD (YMM)** | **23.83x** | 13.33x | 14.32x |
+
+#### **Analysis of Results (Debug Mode)**
+Without compiler optimizations, the performance advantage of the handwritten assembly kernels becomes much clearer. The **scalar assembly is nearly 6x faster** than the unoptimized C code. The SIMD kernels show an even greater speedup, with the YMM and XMM versions being up to **23x faster**. This highlights the inherent inefficiency of the debug-build C code and demonstrates the raw power of assembly and SIMD when optimizations are not a factor. Interestingly, the YMM kernel slightly outperforms the XMM kernel on the smallest vector size in this mode, though they are nearly identical on larger ones.
+
+### **Release Mode Analysis (Optimized)**
+
+In Release mode, the compiler's optimizations (`/O2`) are enabled, leading to highly efficient code generation.
+
+#### **Table 3: Average Execution Time (Release Mode, in milliseconds)**
 
 | Kernel | Vector Size: 2^20 | Vector Size: 2^26 | Vector Size: 2^30 |
 | :--- | :--- | :--- | :--- |
@@ -38,7 +66,7 @@ The performance of each kernel was measured by averaging its execution time over
 | **SIMD (XMM)** | **0.083933 ms** | **0.334314 ms** | **5.527103 ms** |
 | **SIMD (YMM)** | 0.114167 ms | 10.763133 ms | 164.091947 ms |
 
-#### **Table 2: Speedup Factor (Relative to C Kernel)**
+#### **Table 4: Speedup Factor (Release Mode, Relative to C Kernel)**
 
 | Kernel | Vector Size: 2^20 | Vector Size: 2^26 | Vector Size: 2^30 |
 | :--- | :--- | :--- | :--- |
@@ -46,18 +74,15 @@ The performance of each kernel was measured by averaging its execution time over
 | **SIMD (XMM)** | **4.49x** | **74.24x** | **71.41x** |
 | **SIMD (YMM)** | 3.30x | 2.31x | 2.41x |
 
-### **Analysis of Results**
+#### **Analysis of Results (Release Mode)**
+1.  **C vs. Scalar x86-64 Assembly**: The performance of the handwritten scalar assembly code is **nearly identical** to the compiler-optimized C code in Release mode. This is a testament to how effectively modern compilers can optimize straightforward C code, often matching or even exceeding the performance of simple, hand-coded assembly.
 
-1.  **Debug vs. Release Mode**: There is a significant performance gap between the Debug and Release builds. The Release configuration enables compiler optimizations that dramatically reduce execution time. For instance, the C kernel is over **6x faster** in Release mode for the 2^20 vector size.
-
-2.  **C vs. Scalar x86-64 Assembly**: The performance of the handwritten scalar assembly code is **nearly identical** to the compiler-optimized C code in Release mode. This is a testament to how effectively modern compilers can optimize straightforward C code, often matching or even exceeding the performance of simple, hand-coded assembly.
-
-3.  **The Power of SIMD (XMM)**: The SIMD kernel using XMM registers delivered a **massive performance improvement**, achieving a speedup of over **70 times** compared to the C kernel on large vector sizes. This efficiency stems from several factors:
+2.  **The Power of SIMD (XMM)**: The SIMD kernel using XMM registers delivered a **massive performance improvement**, achieving a speedup of over **70 times** compared to the C kernel on large vector sizes. This incredible efficiency stems from several factors:
     * **Data Parallelism**: SIMD instructions perform the same operation on multiple data elements simultaneously. Since XMM registers are 128 bits, they can process two 64-bit doubles at once.
     * **Loop Unrolling & Pipelining**: The `simd_asum_xmm.asm` implementation unrolls the main loop to process eight doubles (using four XMM registers) in each iteration. By using two separate accumulator registers (`xmm0` and `xmm4`), it creates two independent dependency chains. This allows the CPU to hide instruction latency by executing other instructions in parallel, making better use of its execution pipelines.
     * **Cache Optimization**: The use of the `prefetchnta` instruction hints to the CPU to load upcoming data into the cache, ensuring the pipeline is not starved waiting for memory access.
 
-4.  **SIMD YMM Performance Anomaly**: Unexpectedly, the YMM kernel, which uses wider 256-bit registers to process four doubles at once, was significantly slower than the XMM version. The reason lies not in the AVX2 instruction set itself, but in the implementation strategy. The algorithm in `simd_asum_ymm.asm` uses a simple loop that processes only one YMM register per iteration. It **lacks the aggressive loop unrolling and latency-hiding techniques** that make the XMM kernel so fast. This result is a crucial insight: a superior instruction set does not guarantee superior performance without an optimized implementation that fully leverages the underlying CPU architecture.
+3.  **SIMD YMM Performance Anomaly**: Unexpectedly, the YMM kernel, which uses wider 256-bit registers to process four doubles at once, was significantly slower than the XMM version. The reason lies not in the AVX2 instruction set itself, but in the implementation strategy. The implementation in `simd_asum_ymm.asm` uses a simple loop that processes only one YMM register per iteration. It **lacks the aggressive loop unrolling and latency-hiding techniques** that make the XMM kernel so fast. This result is a crucial insight: a superior instruction set does not guarantee superior performance without an optimized implementation that fully leverages the underlying CPU architecture.
 
 ---
 
