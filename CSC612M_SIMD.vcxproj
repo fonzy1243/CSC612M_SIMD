@@ -146,7 +146,7 @@
     <CustomBuild Include="simd_asum_xmm.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\nasm\nasm -f win64 simd_asum_xmm.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Program Files (x86)\SASM\NASM\nasm" -f win64 simd_asum_xmm.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">simd_asum_xmm.obj</Outputs>
     </CustomBuild>
   </ItemGroup>
